@@ -13,7 +13,7 @@ BLUE2 = (0, 100, 255)
 BLACK = (0, 0, 0)
 
 BLOCK_SIZE = 20
-SPEED = 30  # High frame-rate execution limit
+SPEED = 99999999999999999999999999999999999999  # High frame-rate execution limit
 
 class SnakeGameAI:
     def __init__(self, w=640, h=480, render=False):

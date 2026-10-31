@@ -198,8 +198,23 @@ def run_playground():
     arena = PlaygroundArena()
     model_ai = Linear_QNet(11, 256, 3)
     
-    path_options = ['./model/model_blue.pth', './model/model.pth']
+        # Calculate the exact directory where this script resides
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    path_options = [
+        os.path.join(base_dir, 'model', 'model_blue.pth'),
+        os.path.join(base_dir, 'model', 'model.pth')
+    ]
     loaded = False
+    
+    for path in path_options:
+        if os.path.exists(path):
+            checkpoint = torch.load(path, map_location=torch.device('cpu')) # Safe loading on CPU/GPU
+            model_ai.load_state_dict(checkpoint['state_dict'])
+            model_ai.eval()
+            print(f"Loaded AI Brain weights from '{path}' successfully!")
+            loaded = True
+            break
+
 
     # Initialize joystick subsystem
     pygame.joystick.init()
@@ -288,8 +303,8 @@ def run_playground():
         print("  DRAW / CONFLICT TERMINATED! ")
     print("═" * 50 + "\n")
     
-    pygame.time.wait(1000)
-    pygame.quit()
+    pygame.display.quit()
+    return
 
 if __name__ == '__main__':
     run_playground()

@@ -70,7 +70,7 @@ class TournamentArena:
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
+                pygame.display.quit()
                 quit()
 
         # Update Directions relative to choices
@@ -199,19 +199,23 @@ def run_tournament():
     model_green = Linear_QNet(11, 256, 3)
     
     # Paths to the independent model checkpoints
-    path_blue = './model/model_blue.pth'
-    path_green = './model/model_green.pth'
+        # Calculate the exact directory where this script resides
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    path_blue = os.path.join(base_dir, 'model', 'model_blue.pth')
+    path_green = os.path.join(base_dir, 'model', 'model_green.pth')
+    path_fallback = os.path.join(base_dir, 'model', 'model.pth')
+
     
     # 2. Load the Blue Snake model weights safely
     if os.path.exists(path_blue):
-        checkpoint_blue = torch.load(path_blue)
+        checkpoint_blue = torch.load(path_blue, map_location=torch.device('cpu'))
         model_blue.load_state_dict(checkpoint_blue['state_dict'])
         model_blue.eval() # Freeze brain layers
         print(" Loaded trained weights for BLUE Snake (model_blue.pth) successfully!")
     else:
         # Fallback to default model.pth if specific file isn't found
-        if os.path.exists('./model/model.pth'):
-            checkpoint_blue = torch.load('./model/model.pth')
+        if os.path.exists(path_fallback):
+            checkpoint_blue = torch.load(path_fallback, map_location=torch.device('cpu'))
             model_blue.load_state_dict(checkpoint_blue['state_dict'])
             model_blue.eval()
             print(" Specific 'model_blue.pth' not found. Falling back to default 'model.pth'.")
@@ -221,14 +225,14 @@ def run_tournament():
 
     # 3. Load the Green Snake model weights safely
     if os.path.exists(path_green):
-        checkpoint_green = torch.load(path_green)
+        checkpoint_green = torch.load(path_green, map_location=torch.device('cpu'))
         model_green.load_state_dict(checkpoint_green['state_dict'])
         model_green.eval() # Freeze brain layers
         print(" Loaded trained weights for GREEN Snake (model_green.pth) successfully!")
     else:
         # Fallback to default model.pth if specific file isn't found
-        if os.path.exists('./model/model.pth'):
-            checkpoint_green = torch.load('./model/model.pth')
+        if os.path.exists(path_fallback):
+            checkpoint_green = torch.load(path_fallback, map_location=torch.device('cpu'))
             model_green.load_state_dict(checkpoint_green['state_dict'])
             model_green.eval()
             print(" Specific 'model_green.pth' not found. Falling back to default 'model.pth'.")
@@ -268,8 +272,9 @@ def run_tournament():
     else:
         print(" MATCH RESULT: IT'S A DRAW! ")
     print("═"*50 + "\n")
-    
-    pygame.time.wait(3000)
+
+    pygame.display.quit()
+    return
 
 if __name__ == '__main__':
     run_tournament()

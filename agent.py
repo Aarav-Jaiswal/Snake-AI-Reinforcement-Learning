@@ -19,8 +19,11 @@ class Agent:
         self.memory = deque(maxlen=MAX_MEMORY) 
         self.model = Linear_QNet(11, 256, 3) # 11 inputs, 256 hidden layer, 3 outputs
 
-        if os.path.exists('./model/model.pth'):
-            checkpoint = torch.load('./model/model.pth')
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        model_dir_path = os.path.join(base_dir, 'model', 'model.pth')
+
+        if os.path.exists(model_dir_path):
+            checkpoint = torch.load(model_dir_path, map_location=torch.device('cpu'))
             self.model.load_state_dict(checkpoint['state_dict'])
             self.n_games = checkpoint['n_games']
             print("Successfully loaded existing trained brain weights!")
